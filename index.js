@@ -12,14 +12,21 @@ const io = require("socket.io")(server, {
 app.use(cors());
 
 const PORT = process.env.PORT || 5000;
+// Store the socket IDs of connected users
+let connectedUsers = [];
 
 app.get("/", (req, res) => {
   res.send("Running");
 });
 
 io.on("connection", (socket) => {
-  socket.emit("me", socket.id);
+  // socket.emit("me", socket.id);
   console.log("socket_id", socket.id);
+
+  connectedUsers.push(socket.id);
+  console.log(connectedUsers);
+  socket.emit("me", socket.id);
+  socket.emit("allUser", connectedUsers);
 
   socket.on("test_connection", (message) => {
     console.log("Received message:", message);
@@ -33,6 +40,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+    console.log("disconnect");
+    connectedUsers = connectedUsers.filter((id) => id != socket.id);
     socket.broadcast.emit("callEnded");
   });
 
