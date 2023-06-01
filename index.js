@@ -30,6 +30,7 @@ io.on("connection", (socket) => {
 
   socket.on("test_connection", (message) => {
     console.log("Received message:", message);
+    io.emit("test_connection", message);
   });
 
   socket.on("callEndEvent", (message) => {
